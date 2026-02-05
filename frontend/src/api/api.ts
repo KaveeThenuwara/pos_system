@@ -1,11 +1,11 @@
 import { Customer, Item, OrderRequest } from '../types';
 
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = 'http://localhost:8080/api/v1';
 
 export const api = {
   customers: {
     getAll: async (): Promise<Customer[]> => {
-      const res = await fetch(`${BASE_URL}/customers`);
+      const res = await fetch(`${BASE_URL}/customers/getAll`);
       if (!res.ok) throw new Error('Failed to fetch customers');
       return res.json();
     },
@@ -15,7 +15,7 @@ export const api = {
       return res.json();
     },
     create: async (customer: Customer): Promise<Customer> => {
-      const res = await fetch(`${BASE_URL}/customers/save`, {
+      const res = await fetch(`${BASE_URL}/customers/saveCustomer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(customer)
