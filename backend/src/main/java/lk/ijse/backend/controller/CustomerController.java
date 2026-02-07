@@ -23,37 +23,64 @@ public class CustomerController {
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }
-
+//save Customer
     @PostMapping(value="/saveCustomer")
     public ResponseEntity<ResponseDTO> saveCustomer(@RequestBody CustomerDTO customerDto) {
-        System.out.println("Come from frontend : "+customerDto);
-        try{
+
+        try {
             int res = customerService.saveCustomer(customerDto);
-            switch(res){
+            switch (res) {
                 case VarList.Created:
                     System.out.println("Customer created successfully");
-                    return ResponseEntity.ok(new ResponseDTO(VarList.Created,"Customer Save Successfully",customerDto));
+                    return ResponseEntity.ok(new ResponseDTO(VarList.Created, "Customer Save Successfully", customerDto));
 
 
                 case VarList.All_Ready_Added:
                     System.out.println("Customer added successfully");
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseDTO(VarList.All_Ready_Added,"Customer All Ready Added",null));
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseDTO(VarList.All_Ready_Added, "Customer All Ready Added", null));
 
                 default:
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseDTO(VarList.Internal_Server_Error,"Customer Not Added Successfully",null));
-
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseDTO(VarList.Internal_Server_Error, "Customer Not Added Successfully", null));
 
 
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    //update customer
+    @PostMapping("/updateCustomer")
+    public ResponseEntity<ResponseDTO> updateCustomer(@RequestBody CustomerDTO customerDto) {
+        int res = customerService.updateCustomer(customerDto);
+
+        if (res == VarList.OK) {
+            return ResponseEntity.ok(new ResponseDTO(VarList.OK, "Customer Updated successfully", customerDto));
+
+        } else if (res == VarList.Not_Found) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseDTO(VarList.Not_Found, "Customer Not Found", null));
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseDTO(VarList.Internal_Server_Error, "Customer Not Updated", null));
+
+    }
+@PostMapping(value = "/deleteCustomer")
+public ResponseEntity<ResponseDTO> deleteCustomer(@RequestBody CustomerDTO customerDto) {
+        int res = customerService.deleteCustomer(customerDto.getEmail());
+        if (res == VarList.OK) {
+            return ResponseEntity.ok(new ResponseDTO(VarList.OK, "Customer Deleted successfully", customerDto.getEmail()));
+
+        }else if (res == VarList.Not_Found) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseDTO(VarList.Not_Found, "Customer Not Deleted", null));
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseDTO(VarList.Internal_Server_Error, "Customer Not Deleted", null));
+}
     @GetMapping(value="/getAll")
     public List<CustomerDTO>  getAllCustomer(){
         List<CustomerDTO> customerList = customerService.getAllCustomer();
-        System.out.println("dsgagfdasgadsadasd "+customerList);
         return customerList;
     }
 }

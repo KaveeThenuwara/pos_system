@@ -64,7 +64,13 @@ export function CustomerPage() {
   const handleUpdate = async () => {
     if (!formData.id) return;
     try {
-      await api.customers.update(formData);
+      const response = await api.customers.update(formData);
+      console.log('Updated customer:', response.code);
+      if (response.code !== 200) {
+        alert('Failed to update customer');
+        return;
+      }
+      alert('Customer updated successfully');
       await fetchCustomers();
       handleClear();
     } catch (err) {
@@ -72,11 +78,15 @@ export function CustomerPage() {
     }
   };
   const handleDelete = async () => {
-    if (!formData.id) return;
+    if (!formData.email) return;
     if (!window.confirm('Are you sure you want to delete this customer?'))
     return;
     try {
-      await api.customers.delete(formData.id);
+     const response = await api.customers.delete(formData.email);
+      if (response.code !== 200) {
+        alert('Failed to delete customer');
+        return;
+      }      alert('Customer deleted successfully');
       await fetchCustomers();
       handleClear();
     } catch (err) {
@@ -148,6 +158,7 @@ export function CustomerPage() {
               type="email"
               name="email"
               value={formData.email}
+             readOnly={isEditing}
               onChange={handleInputChange}
               className="w-full px-4 py-2 transition-all border rounded-md outline-none border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               placeholder="john@example.com" />
