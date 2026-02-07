@@ -1,11 +1,11 @@
 import { Customer, Item, OrderRequest } from '../types';
 
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = 'http://localhost:8080/api/v1';
 
 export const api = {
   customers: {
     getAll: async (): Promise<Customer[]> => {
-      const res = await fetch(`${BASE_URL}/customers`);
+      const res = await fetch(`${BASE_URL}/customers/getAll`);
       if (!res.ok) throw new Error('Failed to fetch customers');
       return res.json();
     },
@@ -15,7 +15,7 @@ export const api = {
       return res.json();
     },
     create: async (customer: Customer): Promise<Customer> => {
-      const res = await fetch(`${BASE_URL}/customers/save`, {
+      const res = await fetch(`${BASE_URL}/customers/saveCustomer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(customer)
@@ -24,7 +24,7 @@ export const api = {
       return res.json();
     },
     update: async (customer: Customer): Promise<Customer> => {
-      const res = await fetch(`${BASE_URL}/customers/update`, {
+      const res = await fetch(`${BASE_URL}/customers/updateCustomer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(customer)
@@ -32,11 +32,15 @@ export const api = {
       if (!res.ok) throw new Error('Failed to update customer');
       return res.json();
     },
-    delete: async (id: string): Promise<void> => {
-      const res = await fetch(`${BASE_URL}/customers/delete/${id}`, {
-        method: 'DELETE'
+    delete: async (email: string): Promise<void> => {
+      const customer = { email };
+      const res = await fetch(`${BASE_URL}/customers/deleteCustomer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(customer)
       });
       if (!res.ok) throw new Error('Failed to delete customer');
+    return res.json();
     }
   },
   items: {
